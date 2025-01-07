@@ -1,0 +1,120 @@
+/* General Body Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f6f8;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.chat-container {
+    width: 80%;
+    max-width: 600px;
+    margin: auto;
+    text-align: center;
+}
+
+/* Chat Form Styles */
+#usernameForm input {
+    padding: 10px;
+    width: 60%;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#usernameForm button {
+    padding: 10px 20px;
+    background-color: #3b8c33;
+    color: white;
+    border: none;
+    border-radius: 4px;
+}
+
+#usernameForm button:hover {
+    background-color: #347a2b;
+}
+
+/* Chat UI */
+#chatApp {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#messages {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+.message {
+    background-color: #f1f1f1;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 8px;
+    position: relative;
+}
+
+.message-text {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.message-time {
+    font-size: 0.8em;
+    color: #888;
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+}
+
+#messageInput {
+    width: 80%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* User List and Typing Indicator */
+.user-list {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.typing-status {
+    font-style: italic;
+    color: #888;
+}
+
+/* Responsiveness */
+@media screen and (max-width: 600px) {
+    .chat-container {
+        width: 95%;
+    }
+
+    #usernameForm input {
+        width: 70%;
+    }
+
+    #messageInput {
+        width: 70%;
+    }
+}

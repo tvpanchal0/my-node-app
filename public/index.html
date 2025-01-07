@@ -3,20 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Socket.io Client</title>
+    <title>Real-time Chat App</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
 </head>
 <body>
-    <h1>Socket.io Client</h1>
-    <script src="/socket.io/socket.io.js"></script>
+    <div class="chat-container">
+        <h1>Chat Application</h1>
+        <div id="usernameForm">
+            <input id="usernameInput" type="text" placeholder="Enter your username" />
+            <button onclick="joinChat()">Join Chat</button>
+        </div>
+        
+        <div id="chatApp" class="chat-box" style="display:none;">
+            <div id="userList" class="user-list"></div>
+            <div id="messages" class="messages"></div>
+            <div id="typingStatus" class="typing-status"></div>
+            <input id="messageInput" type="text" placeholder="Type a message..." />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
     <script>
-        const socket = io();
+        const socket = io('http://localhost:3000');
 
-        // Send a message to the server
-        socket.emit('message', 'Hello from client!');
+        function joinChat() {
+            const username = document.getElementById('usernameInput').value;
+            if (username) {
+                socket.emit('join', username);
+                document.getElementById('usernameForm').style.display = 'none';
+                document.getElementById('chatApp').style.display = 'block';
+            }
+        }
 
-        // Listen for messages from the server
-        socket.on('message', (data) => {
-            console.log(data);
+        function sendMessage() {
+            const message = document.getElementById('messageInput').value;
+            if (message) {
+                const timestamp = new Date().toLocaleString();
+                socket.emit('chat message', { msg: message, timestamp: timestamp });
+                document.getElementById('messageInput').value = '';
+            }
+        }
+
+        socket.on('chat message', (data) => {
+            const messageContainer = document.getElementById('messages');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message');
+            messageElement.innerHTML = `<span class="message-text">${data.msg}</span> <span class="message-time">${data.timestamp}</span>`;
+            messageContainer.appendChild(messageElement);
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        });
+
+        socket.on('user list', (users) => {
+            const userListContainer = document.getElementById('userList');
+            userListContainer.innerHTML = '<h3>Users Online:</h3>';
+            users.forEach(user => {
+                const userElement = document.createElement('p');
+                userElement.textContent = user.username;
+                userListContainer.appendChild(userElement);
+            });
+        });
+
+        socket.on('typing', (username) => {
+            document.getElementById('typingStatus').textContent = `${username} is typing...`;
+            setTimeout(() => {
+                document.getElementById('typingStatus').textContent = '';
+            }, 2000);
+        });
+
+        document.getElementById('messageInput').addEventListener('input', () => {
+            const username = document.getElementById('usernameInput').value;
+            if (username) {
+                socket.emit('typing', username);
+            }
         });
     </script>
 </body>
