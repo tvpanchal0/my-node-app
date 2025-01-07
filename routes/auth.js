@@ -26,27 +26,30 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/register', async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
     const { email, password, name } = req.body;
-  
-    try {
-      // Check if the user already exists
-      const existingUser = await User.findOne({ email });
-      if (existingUser) return res.status(400).json({ message: 'User already exists' });
-  
-      // Create a new user instance
-      const newUser = new User({
-        email,
-        password,
-        name
-      });
-  
-      // Save the new user to the database
-      await newUser.save();
-  
-      res.status(201).json({ message: 'User created successfully' });
-    } catch (err) {
-      res.status(500).json({ message: 'Server error', error: err.message });
-    }
+
+    // Check if the user already exists
+    const existingUser = await User.findOne({ email }).session(session);
+    if (existingUser) throw new Error('User already exists');
+
+    // Create a new user
+    const newUser = new User({ email, password, name });
+    await newUser.save({ session });
+
+    // Commit the transaction
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(201).json({ message: 'User registered successfully' });
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    res.status(400).json({ message: error.message });
+  }
   });
 // Token refresh route
 router.post('/refresh', (req, res) => {
